@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+[NetDev]
+Name=mesh-{{ communities[item.name].shortname }}
+Kind=batadv
+
+[BatmanAdvanced]
+GatewayMode=server
+RoutingAlgorithm=batman-iv

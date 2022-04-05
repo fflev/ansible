@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+{% for community in serviced_communities %}
+[RoutingPolicyRule]
+From=0.0.0.0/0
+Table=201
+Priority=4200
+IncomingInterface=mesh-{{ communities[community.name].shortname }}
+
+{% endfor %}

@@ -1,0 +1,51 @@
+#!/usr/sbin/nft -f
+# {{ ansible_managed }}
+
+# Basic Ruleset: Allow ICMP/ICMPv6 and SSH
+flush ruleset
+
+include "/etc/nftables/freifunk/definitions.nft"
+
+table inet firewall {
+
+    set allowed_protocols {
+        type inet_proto
+        elements = { icmp, icmpv6 }
+    }
+
+    chain inbound_wan {
+        tcp dport { ssh, 1337 } accept
+    }
+
+    chain inbound_mesh {
+    }
+
+    chain inbound {
+        type filter hook input priority filter + 10; policy drop;
+
+        ct state established, related accept
+        meta l4proto @allowed_protocols accept
+        iifname lo accept
+        iifname $WAN_IFACE jump inbound_wan
+        iifname $MESH_IFACES jump inbound_mesh
+    }
+
+    chain forward {
+        type filter hook forward priority filter + 10; policy drop;
+
+        ct state established, related accept
+        iifname $MESH_IFACES tcp flags syn tcp option maxseg size set rt mtu    # clamp MSS to PMTU
+
+        iifname $MESH_IFACES oifname $WAN_IFACE accept
+    }
+
+    chain mangle_prerouting {
+        type filter hook prerouting priority mangle + 10; policy accept;
+    }
+
+    chain nat_postrouting {
+        type nat hook postrouting priority srcnat + 10; policy accept;
+    }
+}
+
+include "/etc/nftables/freifunk/rules.d/*.nft"

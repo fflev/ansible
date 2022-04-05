@@ -1,0 +1,71 @@
+---
+- name: Install fastd
+  ansible.builtin.package:
+    name:
+      - kernel-modules-extra
+      - fastd
+    state: latest
+
+- name: Unblacklist l2tp_eth
+  ansible.builtin.lineinfile:
+    dest: /etc/modprobe.d/l2tp_eth-blacklist.conf
+    regexp: (blacklist l2tp_eth.*)
+    line: "#\\1"
+    backrefs: true
+  when: fastd_l2tp_offload
+
+- name: Unblacklist l2tp_netlink
+  ansible.builtin.lineinfile:
+    dest: /etc/modprobe.d/l2tp_netlink-blacklist.conf
+    regexp: (blacklist l2tp_netlink.*)
+    line: "#\\1"
+    backrefs: true
+  when: fastd_l2tp_offload
+
+- name: create community config directories
+  ansible.builtin.file:
+    state: directory
+    dest: /etc/fastd/{{ communities[item.name].shortname }}
+    mode: 0755
+  loop: "{{ serviced_communities }}"
+
+- name: create community peers directories
+  ansible.builtin.file:
+    state: directory
+    dest: /etc/fastd/{{ communities[item.name].shortname }}/peers
+    mode: 0755
+  loop: "{{ serviced_communities }}"
+
+- name: create configurations
+  ansible.builtin.template:
+    src: fastd.conf.j2
+    dest: /etc/fastd/{{ communities[item.name].shortname }}/fastd.conf
+    mode: 0644
+  loop: "{{ serviced_communities }}"
+  notify:
+    - restart fastd instances
+
+- name: create secrets
+  ansible.builtin.template:
+    src: secret.conf.j2
+    dest: /etc/fastd/{{ communities[item.name].shortname }}/secret.conf
+    mode: 0644
+  loop: "{{ serviced_communities }}"
+  notify:
+    - restart fastd instances
+
+- name: create firewall rules
+  ansible.builtin.template:
+    src: fastd.nft.j2
+    dest: /etc/nftables/freifunk/rules.d/10-fastd.nft
+    mode: 0644
+  loop: "{{ serviced_communities }}"
+  notify:
+    - reload nftables
+
+- name: enable fastd instances
+  ansible.builtin.service:
+    enabled: true
+    state: started
+    name: fastd@{{ communities[item.name].shortname }}
+  loop: "{{ serviced_communities }}"

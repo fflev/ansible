@@ -1,0 +1,36 @@
+---
+- hosts: gateways
+  become: true
+  roles:
+    - role: hcloud_networkd
+      tags: hcloud_networkd
+      when: server_type == 'hcloud'
+    - role: common_fedora
+      tags: common
+    - role: common_tuned
+      tags:
+        - common
+        - common_tuned
+    - role: gw_nftables
+      tags: gw_nftables
+    - role: gw_common
+      tags: gw_common
+    - role: common_batman_adv_15
+      tags: common_batman_adv_15
+    - role: gw_batman_networking
+      tags: gw_batman_networking
+    - role: gw_unbound
+      tags: gw_unbound
+    - role: gw_fastd
+      tags: gw_fastd
+      when: "'fastd' in offered_connection_types"
+    - role: gw_kea
+      tags: gw_kea
+    - role: gw_split_routing
+      tags: gw_split_routing
+      when: used_exit_method != 'direct'
+    - role: gw_exit_vxlan
+      tags:
+        - gw_exit
+        - gw_exit_vxlan
+      when: used_exit_method == 'vxlan'

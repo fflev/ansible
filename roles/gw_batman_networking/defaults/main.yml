@@ -1,0 +1,7 @@
+---
+subnet4: "{{ communities[item.name].subnet4 }}"
+community_octet: "{{ subnet4 | getoctet(2) | int }}"
+community_macid: "{{ subnet4 | getmacid(2) }}"
+v6anycast: fddf:ebfd:a801:{{ communities[item.name].v6hextet }}::ac:1
+v4ip: "{{ subnet4 | ansible.netcommon.ipaddr('network') | ansible.netcommon.ipmath(256 + item.gateway_id) }}"
+v4prefix: "{{ subnet4 | ansible.netcommon.ipaddr('prefix') }}"

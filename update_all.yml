@@ -1,0 +1,22 @@
+---
+- name: update the system
+  hosts: all
+  become: true
+
+  tasks:
+    - name: do dnf upgrade
+      dnf:
+        name: "*"
+        update_cache: true
+        state: latest
+      async: 7200
+      poll: 30
+
+    - name: check for rkhunter
+      command: /usr/bin/test -f /usr/bin/rkhunter
+      register: rkhunter
+      ignore_errors: true
+
+    - name: run rkhunter --propupd
+      command: /usr/bin/rkhunter --propupd
+      when: rkhunter is success

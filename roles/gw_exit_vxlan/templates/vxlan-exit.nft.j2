@@ -1,0 +1,13 @@
+table inet firewall {
+    chain forward {
+        {% for peer in vxlan_exit_peers -%}
+        iifname $MESH_IFACES oifname vxlan-{{ peer.ifname }} accept
+        {%- endfor +%}
+    }
+
+    chain nat_postrouting {
+        {% for peer in vxlan_exit_peers -%}
+        ip saddr $MESH_SUBNETS oifname vxlan-{{ peer.ifname }} masquerade
+        {%- endfor +%}
+    }
+}

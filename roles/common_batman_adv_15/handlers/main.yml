@@ -1,0 +1,5 @@
+---
+- name: restart systemd-modules-load
+  ansible.builtin.service:
+    name: systemd-modules-load
+    state: restarted

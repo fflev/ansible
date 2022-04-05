@@ -1,0 +1,10 @@
+---
+- name: Install common packages
+  ansible.builtin.package:
+    name:
+      - mosh
+      - python3-libselinux
+      - python3-policycoreutils
+      - vim-enhanced
+      - tmux
+    state: latest

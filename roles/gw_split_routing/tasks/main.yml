@@ -1,0 +1,38 @@
+---
+- name: Cache gateway IP and interface
+  ansible.builtin.set_fact:
+    gateway_ip4: "{{ ansible_default_ipv4.address }}"
+    gateway_if: "{{ ansible_default_ipv4.alias }}"
+
+- name: Create {{ gateway_if }}.network.d folder
+  ansible.builtin.file:
+    path: /etc/systemd/network/{{ gateway_if }}.network.d
+    state: directory
+    mode: 0755
+
+- name: Install direct exit rule
+  ansible.builtin.template:
+    src: direct-exit.conf.j2
+    dest: /etc/systemd/network/{{ gateway_if }}.network.d/direct-exit.conf
+    backup: true
+    mode: 0644
+  notify:
+    - reload systemd-networkd
+
+- name: Install tunneled exit rule
+  ansible.builtin.template:
+    src: tunneled-exit.conf.j2
+    dest: /etc/systemd/network/{{ gateway_if }}.network.d/tunneled-exit.conf
+    backup: true
+    mode: 0644
+  notify:
+    - reload systemd-networkd
+
+- name: Install direct exit nftable rule
+  ansible.builtin.template:
+    src: direct-exit.nft.j2
+    dest: /etc/nftables/freifunk/rules.d/30-direct-exit.nft
+    backup: true
+    mode: 0644
+  notify:
+    - reload nftables

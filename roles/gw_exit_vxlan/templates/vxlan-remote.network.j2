@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+
+[Match]
+Name=vxlan-{{ server_alias }}
+
+[Network]
+Address={{ vxlan_transport_network | ipadd(256 * server_id + 4 * index + 1) }}/30

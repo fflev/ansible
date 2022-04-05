@@ -1,0 +1,11 @@
+table inet firewall {
+    chain mangle_prerouting {
+        {% for port in direct_exit_ports %}
+        iifname $MESH_IFACES {{ port.protocol }} dport {{ port.port }} meta mark set 0xff
+        {% endfor %}
+    }
+
+    chain nat_postrouting {
+        meta nfproto ipv4 oifname $WAN_IFACE mark 0xff snat to {{ ansible_default_ipv4.address }}
+    }
+}

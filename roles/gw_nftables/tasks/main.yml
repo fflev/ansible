@@ -1,0 +1,50 @@
+---
+- name: Install nftables
+  ansible.builtin.package:
+    name: nftables
+    state: latest
+
+- name: Create freifunk nftables folder
+  ansible.builtin.file:
+    path: /etc/nftables/freifunk
+    state: directory
+    mode: 0755
+
+- name: Create freifunk rules.d folder
+  ansible.builtin.file:
+    path: /etc/nftables/freifunk/rules.d
+    state: directory
+    mode: 0755
+
+- name: Create nftables definitions
+  ansible.builtin.template:
+    src: definitions.nft.j2
+    dest: /etc/nftables/freifunk/definitions.nft
+    backup: true
+    mode: 0644
+  notify:
+    - reload nftables
+
+- name: Create nftables main configuration
+  ansible.builtin.template:
+    src: main.nft.j2
+    dest: /etc/nftables/freifunk/main.nft
+    backup: true
+    mode: 0644
+  notify:
+    - reload nftables
+
+- name: Reference main nftables configuration for nftable.service
+  ansible.builtin.copy:
+    content: include "/etc/nftables/freifunk/main.nft";
+    dest: /etc/sysconfig/nftables.conf
+    backup: true
+    mode: 0644
+  notify:
+    - reload nftables
+
+- name: Enable and start nftables
+  ansible.builtin.service:
+    name: nftables
+    enabled: true
+    state: started

@@ -1,0 +1,33 @@
+---
+- name: Enable batman-adv copr
+  ansible.builtin.command: dnf -y copr enable heffer/batman-adv
+  args:
+    creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:heffer:batman-adv.repo
+
+- name: Install kernel-modules-extra (contains mainline batman-adv)
+  ansible.builtin.package:
+    name: kernel-modules-extra
+    state: latest
+  when: ansible_distribution == 'Fedora'
+
+- name: Unblacklist batman-adv module
+  ansible.builtin.lineinfile:
+    dest: /etc/modprobe.d/batman-adv-blacklist.conf
+    regexp: (blacklist batman-adv.*)
+    line: "#\\1"
+    backrefs: true
+
+- name: Install batman-adv packages
+  ansible.builtin.package:
+    name:
+      - batctl
+      - batman-adv-dkms
+    state: latest
+
+- name: Install batman-adv module load config
+  ansible.builtin.copy:
+    content: batman-adv
+    dest: /etc/modules-load.d/batman-adv.conf
+    mode: 0644
+  notify:
+    - restart systemd-modules-load

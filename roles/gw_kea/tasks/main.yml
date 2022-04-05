@@ -1,0 +1,48 @@
+---
+- name: Enable kea copr
+  ansible.builtin.command: dnf -y copr enable heffer/kea
+  args:
+    creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:heffer:kea.repo
+
+- name: Install kea
+  ansible.builtin.package:
+    name: kea
+    state: latest
+
+- name: Install kea-dhcp4 config
+  ansible.builtin.template:
+    dest: /etc/kea/kea-dhcp4.conf
+    src: kea-dhcp4.conf.j2
+    backup: true
+    mode: 0644
+  notify:
+    - restart kea-dhcp4
+
+- name: Install kea-ctrl-agent config
+  ansible.builtin.template:
+    dest: /etc/kea/kea-ctrl-agent.conf
+    src: kea-ctrl-agent.conf.j2
+    backup: true
+    mode: 0644
+  notify:
+    - restart kea-ctrl-agent
+
+- name: create firewall rules
+  ansible.builtin.copy:
+    src: dhcp.nft
+    dest: /etc/nftables/freifunk/rules.d/10-dhcp.nft
+    mode: 0644
+  notify:
+    - reload nftables
+
+- name: Enable and start kea-dhcp4
+  ansible.builtin.service:
+    name: kea-dhcp4
+    enabled: true
+    state: started
+
+- name: Enable and start kea-ctrl-agent
+  ansible.builtin.service:
+    name: kea-ctrl-agent
+    enabled: true
+    state: started

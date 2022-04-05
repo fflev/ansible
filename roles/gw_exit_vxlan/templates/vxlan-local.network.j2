@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+[Match]
+Name=vxlan-{{ item.ifname }}
+
+[Network]
+Address={{ vxlan_exit_transport_network | ansible.netcommon.ipmath(256 * server_id + 4 * index + 2) }}/30
+
+[Route]
+Gateway={{ vxlan_exit_transport_network | ansible.netcommon.ipmath(256 * server_id + 4 * index + 1) }}
+Table={{ vxlan_exit_route_table }}

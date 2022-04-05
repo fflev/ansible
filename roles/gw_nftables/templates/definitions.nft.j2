@@ -1,0 +1,13 @@
+define WAN_IFACE = "{{ ansible_default_ipv4.alias }}"
+
+define MESH_IFACES = {
+    {% for community in serviced_communities -%}
+    "mesh-{{ communities[community.name].shortname }}"{% if not loop.last %},{% endif -%}
+    {% endfor +%}
+}
+
+define MESH_SUBNETS = {
+    {% for community in serviced_communities -%}
+    {{ communities[community.name].subnet4 }}{% if not loop.last %},{% endif -%}
+    {% endfor +%}
+}

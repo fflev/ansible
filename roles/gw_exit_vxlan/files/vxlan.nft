@@ -1,0 +1,5 @@
+table inet firewall {
+    chain inbound_wan {
+        udp dport vxlan accept
+    }
+}

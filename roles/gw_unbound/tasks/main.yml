@@ -1,0 +1,29 @@
+---
+- name: Install unbound
+  ansible.builtin.package:
+    name: unbound
+    state: latest
+
+- name: Create local configuration
+  ansible.builtin.template:
+    src: 00-freifunk.conf.j2
+    dest: /etc/unbound/local.d/00-freifunk.conf
+    backup: true
+    mode: 0644
+  loop: "{{ serviced_communities }}"
+  notify:
+    - restart unbound
+
+- name: create firewall rules
+  ansible.builtin.copy:
+    src: dns.nft
+    dest: /etc/nftables/freifunk/rules.d/10-dns.nft
+    mode: 0644
+  notify:
+    - reload nftables
+
+- name: Enable unbound
+  ansible.builtin.service:
+    name: unbound
+    enabled: true
+    state: started

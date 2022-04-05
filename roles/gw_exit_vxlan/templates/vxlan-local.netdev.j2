@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+[NetDev]
+Name=vxlan-{{ item.ifname }}
+Kind=vxlan
+
+[VXLAN]
+VNI={{ server_id + 1000 }}
+Remote={{ item.ip4 }}
+Local={{ gateway_ip4 }}
+DestinationPort=4789

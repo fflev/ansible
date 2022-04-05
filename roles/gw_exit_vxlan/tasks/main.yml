@@ -1,0 +1,104 @@
+---
+- name: Cache gateway IP and interface
+  ansible.builtin.set_fact:
+    gateway_ip4: "{{ ansible_default_ipv4.address }}"
+    gateway_if: "{{ ansible_default_ipv4.alias }}"
+
+# This will create a local vxlan tunnel with a transport IP of the following schema:
+# Server ID of server being provisioned: 2
+# Local:  172.16.2.2
+# Remote: 172.16.2.1
+
+- name: Create networkd.conf.d folder
+  ansible.builtin.file:
+    path: /etc/systemd/networkd.conf.d/
+    state: directory
+    mode: 0755
+
+- name: "Create routing table "
+  ansible.builtin.template:
+    src: vxlan-exit-route-table.conf.j2
+    dest: /etc/systemd/networkd.conf.d/99-vxlan-exit-route-table.conf
+    backup: true
+    mode: 0644
+
+- name: Create local tunnel netdevs
+  ansible.builtin.template:
+    src: vxlan-local.netdev.j2
+    dest: /etc/systemd/network/vxlan-{{ item.ifname }}.netdev
+    backup: true
+    mode: 0644
+  loop: "{{ vxlan_exit_peers|flatten(levels=1) }}"
+  notify:
+    - reload systemd-networkd
+
+- name: Create local tunnel networks
+  ansible.builtin.template:
+    src: vxlan-local.network.j2
+    dest: /etc/systemd/network/vxlan-{{ item.ifname }}.network
+    backup: true
+    mode: 0644
+  loop: "{{ vxlan_exit_peers|flatten(levels=1) }}"
+  loop_control:
+    index_var: index
+  notify:
+    - reload systemd-networkd
+
+- name: Create network.d folder for default interface
+  ansible.builtin.file:
+    path: /etc/systemd/network/{{ gateway_if }}.network.d/
+    state: directory
+    mode: 0755
+
+- name: Create VXLAN config for default interface
+  ansible.builtin.template:
+    src: vxlan-exit.conf.j2
+    dest: /etc/systemd/network/{{ gateway_if }}.network.d/vxlan-exit.conf
+    backup: true
+    mode: 0644
+  notify:
+    - reload systemd-networkd
+
+- name: Open VXLAN port in firewall
+  ansible.builtin.copy:
+    src: vxlan.nft
+    dest: /etc/nftables/freifunk/rules.d/10-vxlan.nft
+    backup: true
+    mode: 0644
+  notify:
+    - reload nftables
+
+- name: Install VXLAN masquerading nftable rules
+  ansible.builtin.template:
+    src: vxlan-exit.nft.j2
+    dest: /etc/nftables/freifunk/rules.d/20-vxlan-exit.nft
+    backup: true
+    mode: 0644
+  notify:
+    - reload nftables
+
+- name: Create remote tunnel netdevs
+  delegate_to: "{{ item.name }}"
+  ansible.builtin.template:
+    src: vxlan-remote.netdev.j2
+    dest: /etc/systemd/network/vxlan-{{ item.ifname }}.netdev
+    backup: true
+    mode: 0644
+  when: item.create_remote
+  loop: "{{ vxlan_exit_peers|flatten(levels=1) }}"
+  notify:
+    - reload systemd-networkd
+
+- name: Create remote tunnel networks
+  delegate_to: "{{ item.name }}"
+  ansible.builtin.template:
+    src: vxlan-remote.network.j2
+    dest: /etc/systemd/network/vxlan-{{ item.ifname }}.network
+    backup: true
+    mode: 0644
+  when: item.create_remote
+  loop: "{{ vxlan_exit_peers|flatten(levels=1) }}"
+  loop_control:
+    index_var: index
+  notify:
+    - reload systemd-networkd

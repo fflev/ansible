@@ -1,0 +1,20 @@
+interface "{{ communities[item.name].shortname }}-%k";
+
+{% for method in fastd_methods %}
+method "{{ method }}";
+{% endfor %}
+
+{% if fastd_l2tp_offload %}
+mode multitap;
+persist interface no;
+offload l2tp yes;
+{% endif %}
+
+bind any port {{ communities[item.name].subnet4 | getoctet(2) | int + 20000}};
+mtu {{ fastd_mtu }};
+
+on verify "true";
+
+include "secret.conf";
+
+include peers from "peers";

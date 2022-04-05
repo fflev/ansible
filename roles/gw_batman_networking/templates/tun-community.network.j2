@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+
+[Match]
+Name={{ communities[item.name].shortname }}-*
+
+[Network]
+BatmanAdvanced=mesh-{{ communities[item.name].shortname }}

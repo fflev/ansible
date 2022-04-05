@@ -1,0 +1,23 @@
+---
+- name: Convert eth0 configuration
+  ansible.builtin.template:
+    src: eth0.network.j2
+    dest: /etc/systemd/network/{{ ansible_default_ipv4.alias }}.network
+    backup: true
+    mode: 0644
+
+- name: Remove NetworkManager
+  ansible.builtin.package:
+    name: NetworkManager
+    state: absent
+
+- name: Install systemd-networkd
+  ansible.builtin.package:
+    name: systemd-networkd
+    state: latest
+
+- name: Enable systemd-networkd
+  ansible.builtin.service:
+    name: systemd-networkd
+    state: started
+    enabled: true

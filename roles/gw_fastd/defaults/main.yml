@@ -1,0 +1,9 @@
+---
+fastd_methods:
+  - null@l2tp
+  - "null"
+  - salsa2012+umac
+
+fastd_l2tp_offload: true
+
+fastd_mtu: 1364

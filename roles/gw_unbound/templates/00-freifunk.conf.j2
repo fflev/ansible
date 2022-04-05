@@ -1,0 +1,14 @@
+{% for community in serviced_communities %}
+{% set subnet4 = communities[community.name].subnet4 %}
+{% set v4ip = subnet4 | ansible.netcommon.ipaddr('network') | ansible.netcommon.ipmath(256 + item.gateway_id) %}
+# {{ communities[community.name].name }}
+interface: {{ v4ip }}
+interface: fddf:ebfd:a801:{{ communities[community.name].v6hextet }}::ac:1
+access-control: {{ subnet4 }} allow
+access-control: fddf:ebfd:a801:{{ communities[community.name].v6hextet }}::/64 allow
+
+local-data: "update.ff{{ communities[item.name].shortname }}. 3600 IN AAAA fddf:ebfd:a801:{{ communities[community.name].v6hextet }}::fff1"
+{% if not loop.last %}
+
+{% endif %}
+{% endfor %}

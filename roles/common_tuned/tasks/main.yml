@@ -1,0 +1,21 @@
+---
+- name: Install tuned
+  ansible.builtin.package:
+    name: tuned
+    state: latest
+
+- name: Enable tuned
+  ansible.builtin.service:
+    name: tuned
+    enabled: true
+    state: started
+
+- name: Set tuned profile to {{ tuned_profile }}
+  ansible.builtin.shell: |
+    before=`sha1sum /etc/tuned/active_profile`
+    tuned-adm profile {{ tuned_profile }}
+    after=`sha1sum /etc/tuned/active_profile`
+    test "$before" != "$after"
+  register: tuned_profile
+  changed_when: tuned_profile.rc == 0
+  failed_when: tuned_profile.rc not in [ 0, 1 ]

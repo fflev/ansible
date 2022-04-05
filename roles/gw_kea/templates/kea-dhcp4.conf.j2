@@ -1,0 +1,103 @@
+{
+  "Dhcp4": {
+    "interfaces-config": {
+      "interfaces": [
+{% for community in serviced_communities %}
+        "mesh-{{ communities[community.name].shortname }}"{% if not loop.last %},{% endif %}
+{% endfor +%}
+      ]
+    },
+{%if kea_dhcp4_control_socket %}
+
+    "control-socket": {
+        "socket-type": "unix",
+        "socket-name": "{{ kea_dhcp4_control_socket }}"
+    },
+{% endif %}
+
+    "lease-database": {
+      "type": "memfile",
+      "lfc-interval": {{ kea_dhcp4_lfc_interval }}
+    },
+
+    "valid-lifetime": {{ kea_dhcp4_valid_lifetime }},
+
+{% if kea_dhcp4_dhcp_option_defs %}
+    "option-def": [
+{% for option in kea_dhcp4_dhcp_option_defs %}
+      {
+        {% if 'space' in option -%}
+        "space": "{{ option.space }}",
+        {% endif -%}
+        "name": "{{ option.name }}",
+        "code": {{ option.code }},
+        "type": "{{ option.type }}"
+      }{% if not loop.last %},{% endif +%}
+{% endfor %}
+    ],
+{% endif %}
+{% if kea_dhcp4_dhcp_options %}
+    "option-data": [
+{% for option in kea_dhcp4_dhcp_options %}
+      {
+        "name": "{{ option.name }}",
+        {% if 'space' in option -%}
+        "space": "{{ option.space }}",
+        {% endif -%}
+        {% if 'always-send' in option -%}
+        "always-send": true,
+        {% endif -%}
+        "data": "{{ option.data }}"
+      }{% if not loop.last %},{% endif +%}
+{% endfor %}
+    ],
+{% endif %}
+
+    "subnet4": [
+{% for community in serviced_communities %}
+{% set subnet4 = communities[community.name].subnet4 %}
+{% set gwprefix = communities[community.name].gwprefix %}
+      {
+        "subnet": "{{ subnet4 }}",
+        "pools": [
+          {
+{# On gateway with id 1 we leave some room for network services and nextnode IP #}
+{% if community.gateway_id == 1 %}
+            "pool": "{{ subnet4 | ansible.netcommon.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.netcommon.ipaddr('10') | ansible.netcommon.ipaddr('address') }} - {{ subnet4 | ansible.netcommon.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.netcommon.ipaddr('-1') | ansible.netcommon.ipaddr('address') }}"
+{% else %}
+            "pool": "{{ subnet4 | ansible.netcommon.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.netcommon.ipaddr('1') | ansible.netcommon.ipaddr('address') }} - {{ subnet4 | ansible.netcommon.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.netcommon.ipaddr('-1') | ansible.netcommon.ipaddr('address') }}"
+{% endif %}
+          }
+        ],
+        "option-data": [
+          {
+            "name": "routers",
+            "data": "{{ subnet4 | ansible.netcommon.ipaddr('1') | ansible.netcommon.ipmath(255 + community.gateway_id) }}"
+          },
+          {
+            "name": "domain-name-servers",
+            "data": "{{ subnet4 | ansible.netcommon.ipaddr('1') | ansible.netcommon.ipmath(255 + community.gateway_id) }}, 9.9.9.9, 192.76.134.3"
+          }
+        ]
+      }{% if not loop.last %},{% endif %}
+{% endfor +%}
+    ]{% if kea_dhcp4_loggers %},
+    "loggers": [
+{% for logger in kea_dhcp4_loggers %}
+      {
+        "name": "{{ logger.name }}",
+        "output_options": [
+          {
+            "output": "{{ logger.output }}"
+          }
+        ],
+        "severity": "{{ logger.severity }}"
+{% if logger.severity == 'DEBUG' %}
+        "debuglevel": {{ logger.debuglevel }}
+{% endif %}
+      }{% if not loop.last %},{% endif %}
+{% endfor +%}
+    ]
+{% endif %}
+  }
+}

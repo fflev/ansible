@@ -1,0 +1,6 @@
+[gateways]
+# Leverkusen
+gw4.fflev.de:22 server_type=hcloud
+gw-us.fflev.de:22 server_type=hcloud
+
+# vim: set ft=dosini

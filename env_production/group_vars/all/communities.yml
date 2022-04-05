@@ -1,0 +1,15 @@
+---
+# Freifunk Community list
+# Per-Community Parameters:
+#   name: String
+#   shortname: String
+#   v6hextet: Hexadecimal (usually city's area code)
+#   subnet4: IPv4 CIDR
+
+communities:
+  leverkusen:
+    name: Freifunk Leverkusen
+    shortname: lev
+    v6hextet: 214
+    subnet4: 10.76.0.0/16
+    gwprefix: 19

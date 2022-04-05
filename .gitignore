@@ -4,3 +4,5 @@ debug.yml
 debug.j2
 
 __pycache__
+
+.fflev-vault-secret.txt

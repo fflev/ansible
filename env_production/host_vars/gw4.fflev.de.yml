@@ -1,0 +1,62 @@
+---
+server_id: 4
+server_alias: gw-lev4
+
+serviced_communities:
+  - name: leverkusen
+    gateway_id: 4
+
+offered_connection_types:
+  - fastd
+
+fastd_secrets:
+  leverkusen: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    30666262613330633034333164643839656438333539346236373239643234323665646637303830
+    6232353966666132663436316634613035663062393530390a623934383332343636353439626263
+    36633039656638336435313437636638343861656334313064663062343864666131663338386132
+    3232633064616530370a383631363235376536623561363563343137303239663338373837373235
+    39356135656533653235373565353763383864346262393735653237656162326334366130333437
+    35393236323761343362326130326161383933396463383434643034376262373434363731356364
+    61643861363930336238326239613064366364346664386439653262613266653936363062323331
+    38326432633464666566
+
+used_exit_method: vxlan
+
+vxlan_exit_peers:
+  - name: nexus.vfn-nrw.de
+    ip4: 185.97.5.68
+    ifname: nexus
+    create_remote: false
+
+direct_exit_ports:
+  - port: 22
+    protocol: tcp
+  - port: 80
+    protocol: tcp
+  - port: 8080
+    protocol: tcp
+  - port: 443
+    protocol: tcp
+  - port: 5223
+    protocol: tcp
+  - port: 443
+    protocol: udp
+  - port: 500
+    protocol: udp
+  - port: 4500
+    protocol: udp
+
+kea_dhcp4_dhcp_option_defs:
+  - space: omada
+    name: controller-address
+    code: 138
+    type: ipv4-address
+
+kea_dhcp4_dhcp_options:
+  - name: interface-mtu
+    data: 1364
+  - name: controller-address
+    space: omada
+    data: 54.39.219.99
+    always-send: true

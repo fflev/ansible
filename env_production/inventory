@@ -1,5 +1,8 @@
 [gateways]
 # Leverkusen
+gw1.fflev.de:22 server_type=hcloud
+gw2.fflev.de:22 server_type=hcloud
+gw3.fflev.de:22 server_type=hcloud
 gw4.fflev.de:22 server_type=hcloud
 gw-us.fflev.de:22 server_type=hcloud
 

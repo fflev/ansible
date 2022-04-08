@@ -28,35 +28,3 @@ vxlan_exit_peers:
     ip4: 185.97.5.68
     ifname: nexus
     create_remote: false
-
-direct_exit_ports:
-  - port: 22
-    protocol: tcp
-  - port: 80
-    protocol: tcp
-  - port: 8080
-    protocol: tcp
-  - port: 443
-    protocol: tcp
-  - port: 5223
-    protocol: tcp
-  - port: 443
-    protocol: udp
-  - port: 500
-    protocol: udp
-  - port: 4500
-    protocol: udp
-
-kea_dhcp4_dhcp_option_defs:
-  - space: omada
-    name: controller-address
-    code: 138
-    type: ipv4-address
-
-kea_dhcp4_dhcp_options:
-  - name: interface-mtu
-    data: 1364
-  - name: controller-address
-    space: omada
-    data: 54.39.219.99
-    always-send: true

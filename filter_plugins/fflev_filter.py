@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from netaddr import IPNetwork
+import subprocess
+import re
 
 
 class FilterModule:
@@ -9,6 +11,7 @@ class FilterModule:
             "getoctet": self.getoctet,
             "getquad": self.getquad,
             "getmacid": self.getmacid,
+            "fastd_pubkey": self.fastd_pubkey,
         }
 
     def getoctet(self, value, num):
@@ -32,3 +35,13 @@ class FilterModule:
             return "%02x" % octet
         else:
             return octet
+
+    def fastd_pubkey(self, value):
+        r = re.compile('^[0-9a-f]{64}$')
+        key = str(value)
+        if not r.match(key):
+            raise ValueError("Input does not look like a fastd key")
+        proc = subprocess.Popen(
+            ['ecdsakeygen', '-p'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        output, _ = proc.communicate(input=key.encode('utf-8'))
+        return output.strip().decode('utf-8')

@@ -1,0 +1,10 @@
+---
+- hosts: gateways
+  gather_facts: false
+  tasks:
+    - name: Get all fastd public keys
+      ansible.builtin.debug:
+        msg: "{{ item.value | fastd_pubkey }}"
+      loop: "{{ fastd_secrets|dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"

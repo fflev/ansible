@@ -24,6 +24,9 @@
     - role: gw_fastd
       tags: gw_fastd
       when: "'fastd' in offered_connection_types"
+    - role: gw_tunneldigger
+      tags: gw_tunneldigger
+      when: "'tunneldigger' in offered_connection_types"
     - role: gw_kea
       tags: gw_kea
     - role: gw_split_routing

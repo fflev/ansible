@@ -1,0 +1,7 @@
+table inet firewall {
+    chain inbound_wan {
+        {% for community in serviced_communities %}
+        udp dport {{ communities[community.name].subnet4 | getoctet(2) | int + 10000 }} accept  # Tunneldigger {{ community.name }}
+        {% endfor %}
+    }
+}

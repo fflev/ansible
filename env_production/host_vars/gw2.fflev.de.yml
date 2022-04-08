@@ -8,6 +8,7 @@ serviced_communities:
 
 offered_connection_types:
   - fastd
+  - tunneldigger
 
 fastd_secrets:
   leverkusen: !vault |

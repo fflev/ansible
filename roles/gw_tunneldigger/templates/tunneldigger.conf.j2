@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+
+[broker]
+address={{ ansible_default_ipv4.address }},{{ ansible_default_ipv6.address }}
+port={{ communities[item.name].subnet4 | getoctet(2) | int + 10000}}
+interface={{ ansible_default_ipv4.alias }}
+max_tunnels=1024
+tunnel_id_base=100
+connection_rate_limit=0
+pmtu={{ l2tp_mtu }}
+
+[log]
+verbosity={{ td_log_verbosity }}
+log_ip_addresses={{ td_log_ip_addresses }}
+
+[hooks]
+session.up=/etc/tunneldigger/broker/scripts/{{ item.name }}-up.sh

@@ -1,0 +1,67 @@
+---
+- name: make sure dnf core plugins are present
+  ansible.builtin.package:
+    name: dnf-plugins-core
+    state: latest
+
+- name: enable tunneldigger copr
+  ansible.builtin.command: dnf -y copr enable heffer/tunneldigger
+  args:
+    creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:heffer:tunneldigger.repo
+
+- name: Install tunneldigger and dependencies
+  ansible.builtin.package:
+    name:
+      - bridge-utils
+      - kernel-modules-extra
+      - tunneldigger-broker
+    state: latest
+
+- name: create scripts directory
+  ansible.builtin.file:
+    state: directory
+    dest: /etc/tunneldigger/broker/scripts
+    mode: 0755
+
+- name: copy up scripts
+  ansible.builtin.template:
+    src: up.sh.j2
+    dest: /etc/tunneldigger/broker/scripts/{{ item.name }}-up.sh
+    mode: 0755
+  loop: "{{ serviced_communities }}"
+
+- name: create blacklists directory
+  ansible.builtin.file:
+    state: directory
+    dest: /etc/tunneldigger/broker/blacklists
+    mode: 0755
+
+- name: create blacklists
+  ansible.builtin.copy:
+    content: ""
+    force: false
+    dest: /etc/tunneldigger/broker/blacklists/{{ item.name }}
+    mode: 0644
+  loop: "{{ serviced_communities }}"
+
+- name: create configurations
+  ansible.builtin.template:
+    src: tunneldigger.conf.j2
+    dest: /etc/tunneldigger/broker/{{ item.name }}.conf
+    mode: 0644
+  loop: "{{ serviced_communities }}"
+
+- name: enable tunneldigger instances
+  ansible.builtin.service:
+    enabled: true
+    state: restarted
+    name: tunneldigger-broker@{{ item.name }}
+  loop: "{{ serviced_communities }}"
+
+- name: Create firewall config
+  ansible.builtin.template:
+    src: tunneldigger.nft.j2
+    dest: /etc/nftables/freifunk/rules.d/10-tunneldigger.nft
+    backup: true
+    mode: 0644
+  notify: reload nftables

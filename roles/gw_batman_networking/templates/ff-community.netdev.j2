@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+
+[NetDev]
+Name=ff-{{ communities[item.name].shortname }}
+Kind=bridge
+
+[Bridge]
+STP=false

@@ -6,6 +6,6 @@ From=0.0.0.0/0
 FirewallMark=255
 Table=main
 Priority=100
-IncomingInterface=mesh-{{ communities[community.name].shortname }}
+IncomingInterface=ff-{{ communities[community.name].shortname }}
 
 {% endfor %}

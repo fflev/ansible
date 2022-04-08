@@ -3,7 +3,7 @@
     "interfaces-config": {
       "interfaces": [
 {% for community in serviced_communities %}
-        "mesh-{{ communities[community.name].shortname }}"{% if not loop.last %},{% endif %}
+        "ff-{{ communities[community.name].shortname }}"{% if not loop.last %},{% endif %}
 {% endfor +%}
       ]
     },

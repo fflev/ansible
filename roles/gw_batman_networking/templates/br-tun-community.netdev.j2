@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+
+[NetDev]
+Name=tun-{{ communities[item.name].shortname }}
+Kind=bridge
+
+[Bridge]
+STP=false

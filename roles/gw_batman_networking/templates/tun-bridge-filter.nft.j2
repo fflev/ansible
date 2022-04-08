@@ -1,0 +1,8 @@
+table bridge filter {
+    chain forwarding {
+        type filter hook forward priority filter; policy accept;
+        {% for community in serviced_communities -%}
+        meta ibrname tun-{{ communities[community.name].shortname }} drop
+        {%- endfor +%}
+    }
+}

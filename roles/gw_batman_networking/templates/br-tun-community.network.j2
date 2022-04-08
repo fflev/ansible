@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+[Match]
+Name=tun-{{ communities[item.name].shortname }}
+
+[Link]
+MACAddress=02:ca:fe:{{ community_macid }}:{{ '%02d' % item.gateway_id }}:00
+
+[Network]
+BatmanAdvanced=mesh-{{ communities[item.name].shortname }}

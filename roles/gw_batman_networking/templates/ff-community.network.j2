@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+[Match]
+Name=ff-{{ communities[item.name].shortname }}
+
+[Network]
+Address={{ v4ip }}/{{ v4prefix }}
+Address=fddf:ebfd:a801:{{ communities[item.name].v6hextet }}::a{{ item.gateway_id }}/64
+
+[Link]
+MACAddress=02:ca:fe:{{ community_macid }}:{{ '%02d' % item.gateway_id }}:01

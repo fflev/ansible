@@ -1,6 +1,0 @@
-# {{ ansible_managed }}
-
-[Network]
-{% for peer in vxlan_exit_peers %}
-VXLAN=vxlan-{{ peer.ifname }}
-{% endfor %}

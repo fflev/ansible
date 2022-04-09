@@ -15,7 +15,7 @@
     state: directory
     mode: 0755
 
-- name: "Create routing table "
+- name: Create routing table
   ansible.builtin.template:
     src: vxlan-exit-route-table.conf.j2
     dest: /etc/systemd/networkd.conf.d/99-vxlan-exit-route-table.conf
@@ -41,21 +41,6 @@
   loop: "{{ vxlan_exit_peers|flatten(levels=1) }}"
   loop_control:
     index_var: index
-  notify:
-    - reload systemd-networkd
-
-- name: Create network.d folder for default interface
-  ansible.builtin.file:
-    path: /etc/systemd/network/{{ gateway_if }}.network.d/
-    state: directory
-    mode: 0755
-
-- name: Create VXLAN config for default interface
-  ansible.builtin.template:
-    src: vxlan-exit.conf.j2
-    dest: /etc/systemd/network/{{ gateway_if }}.network.d/vxlan-exit.conf
-    backup: true
-    mode: 0644
   notify:
     - reload systemd-networkd
 

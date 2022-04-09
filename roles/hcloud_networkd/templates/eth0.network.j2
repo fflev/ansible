@@ -3,6 +3,7 @@ Name={{ ansible_default_ipv4.alias }}
 
 [Network]
 DHCP=ipv4
+{% if "address" in ansible_default_ipv6 %}
 Address={{ ansible_default_ipv6.address }}/{{ ansible_default_ipv6.prefix }}
 
 DNS=2a01:4ff:ff00::add:2
@@ -11,3 +12,4 @@ DNS=2a01:4ff:ff00::add:1
 [Route]
 Gateway={{ ansible_default_ipv6.gateway }}
 Destination=::/0
+{% endif %}

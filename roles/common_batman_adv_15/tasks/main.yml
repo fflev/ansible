@@ -20,9 +20,7 @@
 
 - name: Install batctl
   ansible.builtin.package:
-    name:
-      - batctl
-      - batman-adv-dkms
+    name: batctl
     state: latest
 
 - name: Install batman-adv-dkms

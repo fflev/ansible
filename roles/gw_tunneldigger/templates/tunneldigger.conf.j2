@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
 [broker]
-address={{ ansible_default_ipv4.address }},{{ ansible_default_ipv6.address }}
+address={{ ansible_default_ipv4.address }}
 port={{ communities[item.name].subnet4 | getoctet(2) | int + 10000}}
 interface={{ ansible_default_ipv4.alias }}
 max_tunnels=1024

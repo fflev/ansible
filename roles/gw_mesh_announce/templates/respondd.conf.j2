@@ -1,0 +1,18 @@
+[Defaults]
+Port: 1001
+MulticastLinkAddress: ff02::2:1001
+MulticastSiteAddress: ff05::2:1001
+DefaultDomain: {{ respondd_default_domain }}
+DomainType: batadv
+VPNProtocols: fastd
+Hardware-Model: KVM VirtualMachine
+Contact: {{ respondd_contact_email }}
+VPN: True
+
+{% for community in serviced_communities %}
+{% set short = communities[community.name].shortname %}
+[{{ community.name }}]
+FastdPublicKey: {{ fastd_secrets[community.name] | fastd_pubkey }}
+BatmanInterface: mesh-{{ short }}
+Interfaces: ff-{{ short }},tun-{{ short }}
+{% endfor %}

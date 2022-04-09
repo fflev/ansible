@@ -1,0 +1,13 @@
+[Unit]
+Description=Respondd
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/opt/mesh-announce/respondd.py -d /opt/mesh-announce/providers
+Restart=always
+WorkingDirectory=/opt/mesh-announce
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+[Install]
+WantedBy=multi-user.target

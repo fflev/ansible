@@ -1,0 +1,5 @@
+table inet firewall {
+    chain inbound_mesh {
+        udp dport 1001 accept
+    }
+}

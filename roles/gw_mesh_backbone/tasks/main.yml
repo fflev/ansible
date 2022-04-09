@@ -1,0 +1,29 @@
+---
+- name: Create mesh backbone VXLAN netdev
+  ansible.builtin.template:
+    src: bb-mesh.netdev.j2
+    dest: /etc/systemd/network/bb-mesh-{{ communities[item.name].shortname }}.netdev
+    backup: true
+    mode: 0644
+  loop: "{{ serviced_communities }}"
+  notify:
+    - reload systemd-networkd
+
+- name: Create mesh backbone VXLAN networks
+  ansible.builtin.template:
+    src: bb-mesh.network.j2
+    dest: /etc/systemd/network/bb-mesh-{{ communities[item.name].shortname }}.network
+    backup: true
+    mode: 0644
+  loop: "{{ serviced_communities }}"
+  notify:
+    - reload systemd-networkd
+
+- name: Open VXLAN port in firewall
+  ansible.builtin.copy:
+    src: vxlan.nft
+    dest: /etc/nftables/freifunk/rules.d/10-vxlan.nft
+    backup: true
+    mode: 0644
+  notify:
+    - reload nftables

@@ -19,6 +19,8 @@
       tags: common_batman_adv_15
     - role: gw_batman_networking
       tags: gw_batman_networking
+    - role: gw_mesh_backbone
+      tags: gw_mesh_backbone
     - role: gw_unbound
       tags: gw_unbound
     - role: gw_fastd
@@ -27,6 +29,8 @@
     - role: gw_tunneldigger
       tags: gw_tunneldigger
       when: "'tunneldigger' in offered_connection_types"
+    - role: gw_mesh_announce
+      tags: gw_mesh_announce
     - role: gw_kea
       tags: gw_kea
     - role: gw_split_routing

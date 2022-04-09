@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+[NetDev]
+Name=bb-mesh-{{ communities[item.name].shortname }}
+Kind=vxlan
+
+[VXLAN]
+VNI={{ communities[item.name].subnet4 | getoctet(2) | int + 2000 }}
+Local={{ ansible_default_ipv4.address }}
+DestinationPort=4789
+Independent=yes

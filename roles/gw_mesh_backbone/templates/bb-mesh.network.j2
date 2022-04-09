@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+
+[Match]
+Name=bb-mesh-{{ communities[item.name].shortname }}
+
+[Network]
+BatmanAdvanced=mesh-{{ communities[item.name].shortname }}
+
+{% for peer in groups['gateways'] %}
+{% if peer != inventory_hostname and item.name in hostvars[peer].serviced_communities|map(attribute="name") %}
+[BridgeFDB]
+MACAddress=00:00:00:00:00:00
+{# We use dig to avoid having to gather host vars on all hosts in the group #}
+Destination={{ lookup('dig', peer + '.', qtype='A') }}    # {{ peer }}
+
+{% endif %}
+{% endfor %}

@@ -63,20 +63,20 @@
           {
 {# On gateway with id 1 we leave some room for network services and nextnode IP #}
 {% if community.gateway_id == 1 %}
-            "pool": "{{ subnet4 | ansible.netcommon.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.netcommon.ipaddr('10') | ansible.netcommon.ipaddr('address') }} - {{ subnet4 | ansible.netcommon.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.netcommon.ipaddr('-1') | ansible.netcommon.ipaddr('address') }}"
+            "pool": "{{ subnet4 | ansible.utils.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.utils.ipaddr('10') | ansible.utils.ipaddr('address') }} - {{ subnet4 | ansible.utils.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.utils.ipaddr('-1') | ansible.utils.ipaddr('address') }}"
 {% else %}
-            "pool": "{{ subnet4 | ansible.netcommon.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.netcommon.ipaddr('1') | ansible.netcommon.ipaddr('address') }} - {{ subnet4 | ansible.netcommon.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.netcommon.ipaddr('-1') | ansible.netcommon.ipaddr('address') }}"
+            "pool": "{{ subnet4 | ansible.utils.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.utils.ipaddr('1') | ansible.utils.ipaddr('address') }} - {{ subnet4 | ansible.utils.ipsubnet(gwprefix, community.gateway_id - 1) | ansible.utils.ipaddr('-1') | ansible.utils.ipaddr('address') }}"
 {% endif %}
           }
         ],
         "option-data": [
           {
             "name": "routers",
-            "data": "{{ subnet4 | ansible.netcommon.ipaddr('1') | ansible.netcommon.ipmath(255 + community.gateway_id) }}"
+            "data": "{{ subnet4 | ansible.utils.ipaddr('1') | ansible.utils.ipmath(255 + community.gateway_id) }}"
           },
           {
             "name": "domain-name-servers",
-            "data": "{{ subnet4 | ansible.netcommon.ipaddr('1') | ansible.netcommon.ipmath(255 + community.gateway_id) }}, 9.9.9.9, 192.76.134.3"
+            "data": "{{ subnet4 | ansible.utils.ipaddr('1') | ansible.utils.ipmath(255 + community.gateway_id) }}, 9.9.9.9, 192.76.134.3"
           }
         ]
       }{% if not loop.last %},{% endif %}

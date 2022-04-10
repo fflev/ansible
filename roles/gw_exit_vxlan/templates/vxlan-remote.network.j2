@@ -4,4 +4,4 @@
 Name=vxlan-{{ server_alias }}
 
 [Network]
-Address={{ vxlan_transport_network | ipadd(256 * server_id + 4 * index + 1) }}/30
+Address={{ vxlan_exit_transport_network | ansible.utils.ipmath(256 * server_id + 4 * index + 1) }}/30

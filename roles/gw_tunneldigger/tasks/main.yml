@@ -30,6 +30,13 @@
     mode: 0755
   loop: "{{ serviced_communities }}"
 
+- name: copy down scripts
+  ansible.builtin.template:
+    src: down.sh.j2
+    dest: /etc/tunneldigger/broker/scripts/{{ item.name }}-down.sh
+    mode: 0755
+  loop: "{{ serviced_communities }}"
+
 - name: create blacklists directory
   ansible.builtin.file:
     state: directory
@@ -51,13 +58,6 @@
     mode: 0644
   loop: "{{ serviced_communities }}"
 
-- name: enable tunneldigger instances
-  ansible.builtin.service:
-    enabled: true
-    state: restarted
-    name: tunneldigger-broker@{{ item.name }}
-  loop: "{{ serviced_communities }}"
-
 - name: Create firewall config
   ansible.builtin.template:
     src: tunneldigger.nft.j2
@@ -65,3 +65,10 @@
     backup: true
     mode: 0644
   notify: reload nftables
+
+- name: enable tunneldigger instances
+  ansible.builtin.service:
+    enabled: true
+    state: started
+    name: tunneldigger-broker@{{ item.name }}
+  loop: "{{ serviced_communities }}"

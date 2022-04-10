@@ -1,12 +1,21 @@
 #!/bin/bash
 # {{ ansible_managed }}
+TUNNEL_ID="$1"
+SESSION_ID="$2"
 INTERFACE="$3"
+MTU="$4"
+ENDPOINT_IP="$5"
+ENDPOINT_PORT="$6"
+LOCAL_PORT="$7"
+UUID="$8"
+LOCAL_BROKER_PORT="$9"
 
 if grep -Fq "$8" "/etc/tunneldigger/broker/blacklists/{{ item.name }}"
 then
-	echo "Der Knoten $8 ist auf der Sperrliste, verweigere Zugang."
+	logger -t "tunneldigger@{{ item.name }}" "Node $8 is blacklisted, denying connection"
 	exit 1
 else
-	ip link set dev "$INTERFACE" up mtu {{ l2tp_mtu }}
-	brctl addif tun-{{ communities[item.name].shortname }} "$INTERFACE"
+	ip link set dev "$INTERFACE" master "tun-{{ communities[item.name].shortname }}" mtu {{ l2tp_mtu }} up
+	bridge link set dev "$INTERFACE" isolated on
+	logger -t "tunneldigger@{{ item.name }}" "Connection to node $8 established on interface $INTERFACE"
 fi

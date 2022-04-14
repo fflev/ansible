@@ -7,4 +7,5 @@
       - python3-policycoreutils
       - vim-enhanced
       - tmux
+      - unzip
     state: latest

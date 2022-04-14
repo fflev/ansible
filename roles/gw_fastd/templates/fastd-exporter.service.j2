@@ -1,0 +1,15 @@
+[Unit]
+Description=Fastd Prometheus Exporter
+Documentation=https://github.com/freifunk-darmstadt/fastd-exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+
+ExecStart=/usr/local/bin/fastd-exporter {% for community in serviced_communities %}{{ communities[community.name].shortname }}{% if not loop.last %} {% endif %}{% endfor +%}
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

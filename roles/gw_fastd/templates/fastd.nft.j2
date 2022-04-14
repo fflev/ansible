@@ -1,7 +1,7 @@
 table inet firewall {
     chain inbound_wan {
         {% for community in serviced_communities %}
-        udp dport {{ communities[community.name].subnet4 | getoctet(2) | int + 20000}} accept   # {{ community.name }}
+        ip saddr != $EXIT_IPS udp dport {{ communities[community.name].subnet4 | getoctet(2) | int + 20000}} accept    # {{ community.name }}
         {% endfor %}
         tcp dport 9281 accept    # fastd-exporter
     }

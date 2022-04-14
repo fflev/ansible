@@ -11,3 +11,9 @@ define MESH_SUBNETS = {
     {{ communities[community.name].subnet4 }}{% if not loop.last %},{% endif -%}
     {% endfor +%}
 }
+
+define EXIT_IPS = {
+    {% for ip in exit_ips -%}
+    {{ ip }}
+    {%- endfor +%}
+}

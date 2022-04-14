@@ -12,6 +12,7 @@ offload l2tp yes;
 
 bind any port {{ communities[item.name].subnet4 | getoctet(2) | int + 20000}};
 mtu {{ fastd_mtu }};
+status socket "/run/fastd/{{ communities[item.name].shortname }}.sock";
 
 on verify "true";
 

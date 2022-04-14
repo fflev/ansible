@@ -22,6 +22,12 @@
     backrefs: true
   when: fastd_l2tp_offload
 
+- name: Create tmpfiles.d config
+  ansible.builtin.copy:
+    content: d /run/fastd 0755 root root -
+    dest: /etc/tmpfiles.d/fastd.conf
+    mode: 0644
+
 - name: create community config directories
   ansible.builtin.file:
     state: directory

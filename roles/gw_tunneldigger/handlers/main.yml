@@ -1,10 +1,10 @@
 ---
-- name: reload nftables
+- name: Reload nftables
   ansible.builtin.service:
     name: nftables
     state: reloaded
 
-- name: restart tunneldigger-broker instances
+- name: Restart tunneldigger-broker instances
   ansible.builtin.service:
     name: tunneldigger-broker@{{ item.name }}
     state: restarted

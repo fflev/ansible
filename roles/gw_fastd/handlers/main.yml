@@ -1,11 +1,11 @@
 ---
-- name: restart fastd instances
+- name: Restart fastd instances
   ansible.builtin.service:
     name: fastd@{{ communities[item.name].shortname }}
     state: restarted
   loop: "{{ serviced_communities }}"
 
-- name: reload nftables
+- name: Reload nftables
   ansible.builtin.service:
     name: nftables
     state: reloaded

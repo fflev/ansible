@@ -1,5 +1,6 @@
 ---
-- hosts: gateways
+- name: Configure gateways
+  hosts: gateways
   become: true
   roles:
     - role: hcloud_networkd

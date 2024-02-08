@@ -1,6 +1,6 @@
 ---
 - name: Set SELinux mode to permissive
-  ansible.builtin.selinux:
+  ansible.posix.selinux:
     state: permissive
     policy: targeted
 
@@ -9,22 +9,22 @@
     name: kernel-modules-extra
     state: latest
 
-- name: install tcp_westwood modules-load config
+- name: Install tcp_westwood modules-load config
   ansible.builtin.copy:
     content: tcp_westwood
     dest: /etc/modules-load.d/tcp_westwood.conf
-    mode: 0644
+    mode: "0644"
 
-- name: install freifunk sysctl config
+- name: Install freifunk sysctl config
   ansible.builtin.template:
     src: sysctl-99-freifunk.conf.j2
     dest: /etc/sysctl.d/99-freifunk.conf
-    mode: 0644
+    mode: "0644"
   notify:
-    - reload sysctl
+    - Reload sysctl
 
-- name: install nf_conntrack module config
+- name: Install nf_conntrack module config
   ansible.builtin.copy:
     content: options nf_conntrack hashsize={{ (nf_conntrack_max / 4) | int }}
     dest: /etc/modprobe.d/nf_conntrack.conf
-    mode: 0644
+    mode: "0644"

@@ -4,7 +4,7 @@
     src: eth0.network.j2
     dest: /etc/systemd/network/{{ ansible_default_ipv4.alias }}.network
     backup: true
-    mode: 0644
+    mode: "0644"
 
 - name: Remove NetworkManager
   ansible.builtin.package:

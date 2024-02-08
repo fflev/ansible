@@ -3,3 +3,6 @@
 
 skip_list:
   - package-latest
+
+warn_list:
+  - var-naming[no-role-prefix]

@@ -1,5 +1,5 @@
 ---
-- name: restart respondd
+- name: Restart respondd
   ansible.builtin.service:
     name: respondd
     state: restarted

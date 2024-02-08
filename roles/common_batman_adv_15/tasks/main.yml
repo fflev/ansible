@@ -2,8 +2,11 @@
 - name: Enable batman-adv copr
   ansible.builtin.command: dnf -y copr enable heffer/batman-adv
   args:
-    creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:heffer:batman-adv.repo
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+    creates: >
+      /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:heffer:batman-adv.repo
+  when:
+    ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat
+    Enterprise Linux'
 
 - name: Install kernel-modules-extra (contains mainline batman-adv)
   ansible.builtin.package:
@@ -27,12 +30,14 @@
   ansible.builtin.package:
     name: batman-adv-dkms
     state: latest
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when:
+    ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat
+    Enterprise Linux'
 
 - name: Install batman-adv module load config
   ansible.builtin.copy:
     content: batman-adv
     dest: /etc/modules-load.d/batman-adv.conf
-    mode: 0644
+    mode: "0644"
   notify:
     - restart systemd-modules-load

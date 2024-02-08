@@ -7,7 +7,7 @@ kea_dhcp4_loggers:
   - name: kea-dhcp4
     output: /var/log/kea-dhcp4.log
     severity: INFO
-    debuglevel: 00
+    debuglevel: "00"
 
 kea_dhcp4_dhcp_options:
   - name: interface-mtu
@@ -25,4 +25,4 @@ kea_ctrl_agent_loggers:
   - name: kea-ctrl-agent
     output: /var/log/kea-ctrl-agent.log
     severity: INFO
-    debuglevel: 00
+    debuglevel: "00"

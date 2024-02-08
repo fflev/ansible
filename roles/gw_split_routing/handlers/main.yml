@@ -1,10 +1,10 @@
 ---
-- name: reload systemd-networkd
+- name: Reload systemd-networkd
   ansible.builtin.service:
     name: systemd-networkd
     state: reloaded
 
-- name: reload nftables
+- name: Reload nftables
   ansible.builtin.service:
     name: nftables
     state: reloaded

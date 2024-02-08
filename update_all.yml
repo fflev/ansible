@@ -1,22 +1,24 @@
 ---
-- name: update the system
+- name: Update the system
   hosts: all
   become: true
 
   tasks:
-    - name: do dnf upgrade
-      dnf:
+    - name: Do dnf upgrade
+      ansible.builtin.dnf:
         name: "*"
         update_cache: true
         state: latest
       async: 7200
       poll: 30
 
-    - name: check for rkhunter
-      command: /usr/bin/test -f /usr/bin/rkhunter
+    - name: Check for rkhunter
+      ansible.builtin.command: /usr/bin/test -f /usr/bin/rkhunter
       register: rkhunter
       ignore_errors: true
+      changed_when: false
 
-    - name: run rkhunter --propupd
-      command: /usr/bin/rkhunter --propupd
+    - name: Run rkhunter --propupd
+      ansible.builtin.command: /usr/bin/rkhunter --propupd
       when: rkhunter is success
+      changed_when: true

@@ -9,18 +9,18 @@
     src: 00-freifunk.conf.j2
     dest: /etc/unbound/local.d/00-freifunk.conf
     backup: true
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
   notify:
-    - restart unbound
+    - Restart unbound
 
-- name: create firewall rules
+- name: Create firewall rules
   ansible.builtin.copy:
     src: dns.nft
     dest: /etc/nftables/freifunk/rules.d/10-dns.nft
-    mode: 0644
+    mode: "0644"
   notify:
-    - reload nftables
+    - Reload nftables
 
 - name: Enable unbound
   ansible.builtin.service:

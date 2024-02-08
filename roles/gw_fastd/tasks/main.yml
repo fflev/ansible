@@ -22,59 +22,48 @@
     backrefs: true
   when: fastd_l2tp_offload
 
-- name: Create tmpfiles.d config
-  ansible.builtin.copy:
-    content: d /run/fastd 0755 root root -
-    dest: /etc/tmpfiles.d/fastd.conf
-    mode: 0644
-  register: fastd_tmpfiles
-
-- name: Run systemd-tmpfiles create
-  ansible.builtin.command: systemd-tmpfiles --create
-  when: fastd_tmpfiles.changed # noqa no-handler
-
-- name: create community config directories
+- name: Create community config directories
   ansible.builtin.file:
     state: directory
     dest: /etc/fastd/{{ communities[item.name].shortname }}
-    mode: 0755
+    mode: "0755"
   loop: "{{ serviced_communities }}"
 
-- name: create community peers directories
+- name: Create community peers directories
   ansible.builtin.file:
     state: directory
     dest: /etc/fastd/{{ communities[item.name].shortname }}/peers
-    mode: 0755
+    mode: "0755"
   loop: "{{ serviced_communities }}"
 
-- name: create configurations
+- name: Create configurations
   ansible.builtin.template:
     src: fastd.conf.j2
     dest: /etc/fastd/{{ communities[item.name].shortname }}/fastd.conf
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
   notify:
-    - restart fastd instances
+    - Restart fastd instances
 
-- name: create secrets
+- name: Create secrets
   ansible.builtin.template:
     src: secret.conf.j2
     dest: /etc/fastd/{{ communities[item.name].shortname }}/secret.conf
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
   notify:
-    - restart fastd instances
+    - Restart fastd instances
 
-- name: create firewall rules
+- name: Create firewall rules
   ansible.builtin.template:
     src: fastd.nft.j2
     dest: /etc/nftables/freifunk/rules.d/10-fastd.nft
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
   notify:
-    - reload nftables
+    - Reload nftables
 
-- name: enable fastd instances
+- name: Enable fastd instances
   ansible.builtin.service:
     enabled: true
     state: started
@@ -83,7 +72,8 @@
 
 - name: Install latest fastd-exporter
   ansible.builtin.unarchive:
-    src: https://git.darmstadt.ccc.de/ffda/infra//fastd-exporter/-/jobs/artifacts/master/download?job=release
+    src: >
+      https://git.darmstadt.ccc.de/ffda/infra//fastd-exporter/-/jobs/artifacts/master/download?job=release
     dest: /usr/local/bin
     remote_src: true
     creates: /usr/local/bin/fastd-exporter
@@ -92,11 +82,11 @@
   ansible.builtin.template:
     src: fastd-exporter.service.j2
     dest: /etc/systemd/system/fastd-exporter.service
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
   register: fastd_exporter_systemd_unit
 
-- name: enable and start fastd-exporter
+- name: Enable and start fastd-exporter
   ansible.builtin.systemd:
     name: fastd-exporter
     state: started

@@ -1,8 +1,10 @@
 ---
-- name: get os version
+- name: Get os version
   hosts: all
 
   tasks:
-    - name: get os version
-      debug:
-        msg: System {{ inventory_hostname }} is {{ ansible_distribution }} {{ ansible_distribution_release }} ({{ ansible_kernel }})
+    - name: Get os version
+      ansible.builtin.debug:
+        msg:
+          System {{ inventory_hostname }} is {{ ansible_distribution }} {{
+          ansible_distribution_release }} ({{ ansible_kernel }})

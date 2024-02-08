@@ -4,68 +4,73 @@
     src: ff-community.netdev.j2
     dest: /etc/systemd/network/ff-{{ communities[item.name].shortname }}.netdev
     backup: true
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
-  notify: restart systemd-networkd
+  notify: Restart systemd-networkd
 
 - name: Create community bridge networks
   ansible.builtin.template:
     src: ff-community.network.j2
     dest: /etc/systemd/network/ff-{{ communities[item.name].shortname }}.network
     backup: true
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
-  notify: restart systemd-networkd
+  notify: Restart systemd-networkd
 
 - name: Create tun bridge netdevs
   ansible.builtin.template:
     src: br-tun-community.netdev.j2
-    dest: /etc/systemd/network/br-tun-{{ communities[item.name].shortname }}.netdev
+    dest:
+      /etc/systemd/network/br-tun-{{ communities[item.name].shortname }}.netdev
     backup: true
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
-  notify: restart systemd-networkd
+  notify: Restart systemd-networkd
 
 - name: Create tun bridge networks
   ansible.builtin.template:
     src: br-tun-community.network.j2
-    dest: /etc/systemd/network/br-tun-{{ communities[item.name].shortname }}.network
+    dest:
+      /etc/systemd/network/br-tun-{{ communities[item.name].shortname }}.network
     backup: true
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
-  notify: restart systemd-networkd
+  notify: Restart systemd-networkd
 
 - name: Create mesh netdevs
   ansible.builtin.template:
     src: mesh-community.netdev.j2
-    dest: /etc/systemd/network/mesh-{{ communities[item.name].shortname }}.netdev
+    dest:
+      /etc/systemd/network/mesh-{{ communities[item.name].shortname }}.netdev
     backup: true
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
-  notify: restart systemd-networkd
+  notify: Restart systemd-networkd
 
 - name: Create mesh networks
   ansible.builtin.template:
     src: mesh-community.network.j2
-    dest: /etc/systemd/network/mesh-{{ communities[item.name].shortname }}.network
+    dest:
+      /etc/systemd/network/mesh-{{ communities[item.name].shortname }}.network
     backup: true
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
-  notify: restart systemd-networkd
+  notify: Restart systemd-networkd
 
 - name: Create tun networks
   ansible.builtin.template:
     src: tun-community.network.j2
-    dest: /etc/systemd/network/tun-{{ communities[item.name].shortname }}.network
+    dest:
+      /etc/systemd/network/tun-{{ communities[item.name].shortname }}.network
     backup: true
-    mode: 0644
+    mode: "0644"
   loop: "{{ serviced_communities }}"
-  notify: restart systemd-networkd
+  notify: Restart systemd-networkd
 
 - name: Create tun bridge filter
   ansible.builtin.template:
     src: tun-bridge-filter.nft.j2
     dest: /etc/nftables/freifunk/rules.d/10-tun-bridge-filter.nft
     backup: true
-    mode: 0644
-  notify: reload nftables
+    mode: "0644"
+  notify: Reload nftables
